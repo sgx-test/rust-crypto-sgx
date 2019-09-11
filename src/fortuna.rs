@@ -44,29 +44,29 @@
  * say) then you need to EXPLICITLY RESEED THE RNG AFTER FORKING.
  */
 
-use cryptoutil::copy_memory;
+//use cryptoutil::copy_memory;
 
-use rand::{Rng, SeedableRng};
-use time::precise_time_s;
+use rand::{Rng, SeedableRng, thread_rng};
+//use time::precise_time_s;
 
-use aessafe::AesSafe256Encryptor;
+//use aessafe::AesSafe256Encryptor;
 use cryptoutil::read_u32_le;
 use digest::Digest;
 use sha2::Sha256;
-use symmetriccipher::BlockEncryptor;
+//use symmetriccipher::BlockEncryptor;
 
 /// Length in bytes that the first pool must be before a "catastrophic
 /// reseed" is allowed to happen. (A direct reseed through the
 /// `SeedableRng` API is not affected by this limit.)
 pub const MIN_POOL_SIZE: usize = 64;
-/// Maximum number of bytes to generate before rekeying
-const MAX_GEN_SIZE: usize = (1 << 20);
+// Maximum number of bytes to generate before rekeying
+//const MAX_GEN_SIZE: usize = (1 << 20);
 /// Length in bytes of the AES key
 const KEY_LEN: usize = 32;
 /// Length in bytes of the AES counter
 const CTR_LEN: usize = 16;
-/// Length in bytes of the AES block
-const AES_BLOCK_SIZE: usize = 16;
+// Length in bytes of the AES block
+//const AES_BLOCK_SIZE: usize = 16;
 /// Number of pools used to accumulate entropy
 const NUM_POOLS: usize = 32;
 
@@ -110,39 +110,39 @@ impl FortunaGenerator {
         self.increment_counter();
     }
 
-    /// Generates some `k` 16-byte blocks of random output (PC 9.4.3)
-    /// This should never be used directly, except by `generate_random_data`.
-    fn generate_blocks(&mut self, k: usize, out: &mut [u8]) {
-        assert!(self.ctr[..] != [0; CTR_LEN][..]);
+    ///// Generates some `k` 16-byte blocks of random output (PC 9.4.3)
+    ///// This should never be used directly, except by `generate_random_data`.
+    //fn generate_blocks(&mut self, k: usize, out: &mut [u8]) {
+    //    assert!(self.ctr[..] != [0; CTR_LEN][..]);
 
-        // Setup AES encryptor
-        let block_encryptor = AesSafe256Encryptor::new(&self.key[..]);
-        // Concatenate all the blocks
-        for j in 0..k {
-            block_encryptor.encrypt_block(&self.ctr[..],
-                                          &mut out[AES_BLOCK_SIZE * j..AES_BLOCK_SIZE * (j + 1)]);
-            self.increment_counter();
-        }
-    }
+    //    // Setup AES encryptor
+    //    let block_encryptor = AesSafe256Encryptor::new(&self.key[..]);
+    //    // Concatenate all the blocks
+    //    for j in 0..k {
+    //        block_encryptor.encrypt_block(&self.ctr[..],
+    //                                      &mut out[AES_BLOCK_SIZE * j..AES_BLOCK_SIZE * (j + 1)]);
+    //        self.increment_counter();
+    //    }
+    //}
 
-    /// Generates `n` bytes of random data (9.4.4)
-    fn generate_random_data(&mut self, out: &mut [u8]) {
-        let (n, rem) = (out.len() / AES_BLOCK_SIZE, out.len() % AES_BLOCK_SIZE);
-        assert!(n <= MAX_GEN_SIZE);
+    ///// Generates `n` bytes of random data (9.4.4)
+    //fn generate_random_data(&mut self, out: &mut [u8]) {
+    //    let (n, rem) = (out.len() / AES_BLOCK_SIZE, out.len() % AES_BLOCK_SIZE);
+    //    assert!(n <= MAX_GEN_SIZE);
 
-        // Generate output
-        self.generate_blocks(n, &mut out[..(n * AES_BLOCK_SIZE)]);
-        if rem > 0 {
-            let mut buf = [0; AES_BLOCK_SIZE];
-            self.generate_blocks(1, &mut buf);
-            copy_memory(&buf[..rem], &mut out[(n * AES_BLOCK_SIZE)..]);
-        }
+    //    // Generate output
+    //    self.generate_blocks(n, &mut out[..(n * AES_BLOCK_SIZE)]);
+    //    if rem > 0 {
+    //        let mut buf = [0; AES_BLOCK_SIZE];
+    //        self.generate_blocks(1, &mut buf);
+    //        copy_memory(&buf[..rem], &mut out[(n * AES_BLOCK_SIZE)..]);
+    //    }
 
-        // Rekey
-        let mut new_key = [0; KEY_LEN];
-        self.generate_blocks(KEY_LEN / AES_BLOCK_SIZE, &mut new_key);
-        self.key = new_key;
-    }
+    //    // Rekey
+    //    let mut new_key = [0; KEY_LEN];
+    //    self.generate_blocks(KEY_LEN / AES_BLOCK_SIZE, &mut new_key);
+    //    self.key = new_key;
+    //}
 }
 
 
@@ -163,16 +163,16 @@ impl Pool {
         self.count += data.len();
     }
 
-    fn result(&mut self, output: &mut [u8]) {
-        self.state.result(output);
-        // Double-SHA256 it
-        self.state = Sha256::new();
-        self.state.input(output);
-        self.state.result(output);
-        // Clear the pool state
-        self.state = Sha256::new();
-        self.count = 0;
-    }
+    //fn result(&mut self, output: &mut [u8]) {
+    //    self.state.result(output);
+    //    // Double-SHA256 it
+    //    self.state = Sha256::new();
+    //    self.state.input(output);
+    //    self.state.result(output);
+    //    // Clear the pool state
+    //    self.state = Sha256::new();
+    //    self.count = 0;
+    //}
 }
 
 /// The `Fortuna` CSPRNG (PC 9.5)
@@ -180,7 +180,7 @@ pub struct Fortuna {
     pool: [Pool; NUM_POOLS],
     generator: FortunaGenerator,
     reseed_count: u32,
-    last_reseed_time: f64
+    //last_reseed_time: f64
 }
 
 impl Fortuna {
@@ -190,7 +190,7 @@ impl Fortuna {
             pool: [Pool::new(); NUM_POOLS],
             generator: FortunaGenerator::new(),
             reseed_count: 0,
-            last_reseed_time: 0.0
+            //last_reseed_time: 0.0
         }
     }
 
@@ -215,31 +215,32 @@ impl Rng for Fortuna {
     /// `MIN_POOL_SIZE` bytes of data in the first accumulator
     /// pool, this function will fail the task.
     fn fill_bytes(&mut self, dest: &mut [u8]) {
+        thread_rng().fill_bytes(dest);
         // Reseed if necessary
-        let now = precise_time_s();
-        if self.pool[0].count >= MIN_POOL_SIZE &&
-           now - self.last_reseed_time > 0.1 {
-            self.reseed_count += 1;
-            self.last_reseed_time = now;
-            // Compute key as Sha256d( key || s )
-            let mut hash = [0; (32 * NUM_POOLS)];
-            let mut n_pools = 0;
-            while self.reseed_count % (1 << n_pools) == 0 {
-                (&mut self.pool[n_pools]).result(&mut hash[n_pools * 32..(n_pools + 1) * 32]);
-                n_pools += 1;
-                assert!(n_pools < NUM_POOLS);
-                assert!(n_pools < 32); // width of counter
-            }
-            self.generator.reseed(&hash[..n_pools * 32]);
-        }
-        // Fail on unseeded RNG
-        if self.reseed_count == 0 {
-            panic!("rust-crypto: an unseeded Fortuna was asked for random bytes!");
-        }
-        // Generate return data
-        for dest in dest.chunks_mut(MAX_GEN_SIZE) {
-            self.generator.generate_random_data(dest);
-        }
+        //let now = precise_time_s();
+        //if self.pool[0].count >= MIN_POOL_SIZE &&
+        //   now - self.last_reseed_time > 0.1 {
+        //    self.reseed_count += 1;
+        //    self.last_reseed_time = now;
+        //    // Compute key as Sha256d( key || s )
+        //    let mut hash = [0; (32 * NUM_POOLS)];
+        //    let mut n_pools = 0;
+        //    while self.reseed_count % (1 << n_pools) == 0 {
+        //        (&mut self.pool[n_pools]).result(&mut hash[n_pools * 32..(n_pools + 1) * 32]);
+        //        n_pools += 1;
+        //        assert!(n_pools < NUM_POOLS);
+        //        assert!(n_pools < 32); // width of counter
+        //    }
+        //    self.generator.reseed(&hash[..n_pools * 32]);
+        //}
+        //// Fail on unseeded RNG
+        //if self.reseed_count == 0 {
+        //    panic!("rust-crypto: an unseeded Fortuna was asked for random bytes!");
+        //}
+        //// Generate return data
+        //for dest in dest.chunks_mut(MAX_GEN_SIZE) {
+        //    self.generator.generate_random_data(dest);
+        //}
     }
 
     fn next_u32(&mut self) -> u32 {
@@ -259,7 +260,7 @@ impl<'a> SeedableRng<&'a [u8]> for Fortuna {
 
     fn reseed(&mut self, seed: &'a [u8]) {
         self.reseed_count += 1;
-        self.last_reseed_time = precise_time_s();
+        //self.last_reseed_time = precise_time_s();
         self.generator.reseed(seed);
     }
 }

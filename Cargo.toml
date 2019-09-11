@@ -15,12 +15,16 @@ name = "crypto"
 
 [features]
 with-bench = []
+default = ["mesalock_sgx"]
+mesalock_sgx = []
 
 [build-dependencies]
-gcc = "^0.3"
+cc = "1.0"
+
+[target.'cfg(not(target_env = "sgx"))'.dependencies]
+sgx_types = { rev = "v1.0.9", git = "https://github.com/baidu/rust-sgx-sdk.git" }
+sgx_rand = { rev = "v1.0.9", git = "https://github.com/baidu/rust-sgx-sdk.git" }
+sgx_tstd = { rev = "v1.0.9", git = "https://github.com/baidu/rust-sgx-sdk.git" }
 
 [dependencies]
-libc = "^0.2"
-time = "^0.1"
-rand = "^0.3"
-rustc-serialize = "^0.3"
+rustc-serialize = { git = "https://github.com/mesalock-linux/rustc-serialize-sgx" }

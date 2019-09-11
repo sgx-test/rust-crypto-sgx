@@ -4,6 +4,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::prelude::v1::*;
+
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 use aesni;
 
@@ -26,7 +28,7 @@ pub enum KeySize {
 pub fn ecb_encryptor<X: PaddingProcessor + Send + 'static>(
         key_size: KeySize,
         key: &[u8],
-        padding: X) -> Box<Encryptor> {
+        padding: X) -> Box<dyn Encryptor> {
     if util::supports_aesni() {
         let aes_enc = aesni::AesNiEncryptor::new(key_size, key);
         let enc = Box::new(EcbEncryptor::new(aes_enc, padding));
@@ -82,7 +84,7 @@ pub fn ecb_encryptor<X: PaddingProcessor + Send + 'static>(
 pub fn ecb_decryptor<X: PaddingProcessor + Send + 'static>(
         key_size: KeySize,
         key: &[u8],
-        padding: X) -> Box<Decryptor> {
+        padding: X) -> Box<dyn Decryptor> {
     if util::supports_aesni() {
         let aes_dec = aesni::AesNiDecryptor::new(key_size, key);
         let dec = Box::new(EcbDecryptor::new(aes_dec, padding));
@@ -139,7 +141,7 @@ pub fn cbc_encryptor<X: PaddingProcessor + Send + 'static>(
         key_size: KeySize,
         key: &[u8],
         iv: &[u8],
-        padding: X) -> Box<Encryptor + 'static> {
+        padding: X) -> Box<dyn Encryptor + 'static> {
     if util::supports_aesni() {
         let aes_enc = aesni::AesNiEncryptor::new(key_size, key);
         let enc = Box::new(CbcEncryptor::new(aes_enc, padding, iv.to_vec()));
@@ -197,7 +199,7 @@ pub fn cbc_decryptor<X: PaddingProcessor + Send + 'static>(
         key_size: KeySize,
         key: &[u8],
         iv: &[u8],
-        padding: X) -> Box<Decryptor + 'static> {
+        padding: X) -> Box<dyn Decryptor + 'static> {
     if util::supports_aesni() {
         let aes_dec = aesni::AesNiDecryptor::new(key_size, key);
         let dec = Box::new(CbcDecryptor::new(aes_dec, padding, iv.to_vec()));
@@ -254,7 +256,7 @@ pub fn cbc_decryptor<X: PaddingProcessor + Send + 'static>(
 pub fn ctr(
         key_size: KeySize,
         key: &[u8],
-        iv: &[u8]) -> Box<SynchronousStreamCipher + 'static> {
+        iv: &[u8]) -> Box<dyn SynchronousStreamCipher + 'static> {
     if util::supports_aesni() {
         let aes_dec = aesni::AesNiEncryptor::new(key_size, key);
         let dec = Box::new(CtrMode::new(aes_dec, iv.to_vec()));

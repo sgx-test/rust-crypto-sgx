@@ -7,6 +7,7 @@
 //! This module implements the HMAC-based Extract-and-Expand Key
 //! Derivation Function as specified by  https://tools.ietf.org/html/rfc5869.
 
+use std::prelude::v1::*;
 use std::iter::repeat;
 use cryptoutil::copy_memory;
 

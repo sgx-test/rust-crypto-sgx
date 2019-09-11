@@ -6,10 +6,17 @@
 
 #![cfg_attr(feature = "with-bench", feature(test))]
 
-extern crate rand;
+#![cfg_attr(all(feature = "mesalock_sgx",
+                not(target_env = "sgx")), no_std)]
+#![cfg_attr(all(target_env = "sgx", target_vendor = "mesalock"), feature(rustc_private))]
+
+#[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))]
+#[macro_use]
+extern crate sgx_tstd as std;
+
+extern crate sgx_rand as rand;
+extern crate sgx_types;
 extern crate rustc_serialize as serialize;
-extern crate time;
-extern crate libc;
 
 #[cfg(all(test, feature = "with-bench"))]
 extern crate test;
