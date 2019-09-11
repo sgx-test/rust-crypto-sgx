@@ -4,6 +4,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::prelude::v1::*;
 use aes::{ctr, KeySize};
 use aead::{AeadEncryptor,AeadDecryptor};
 use cryptoutil::copy_memory;
@@ -12,7 +13,7 @@ use ghash::{Ghash};
 use util::fixed_time_eq;
 
 pub struct AesGcm<'a> {
-    cipher: Box<SynchronousStreamCipher + 'a>,
+    cipher: Box<dyn SynchronousStreamCipher + 'a>,
     mac: Ghash,
     finished: bool,
     end_tag: [u8; 16]

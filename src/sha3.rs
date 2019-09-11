@@ -45,6 +45,7 @@ assert_eq!(hex, "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe2451143153
 
  */
 
+use std::prelude::v1::*;
 use std::cmp;
 
 use digest::Digest;
