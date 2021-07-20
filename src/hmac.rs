@@ -8,7 +8,7 @@
  * This module implements the Hmac function - a Message Authentication Code using a Digest.
  */
 
-use std::prelude::v1::*;
+
 use std::iter::repeat;
 
 use cryptoutil;

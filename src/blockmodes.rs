@@ -8,7 +8,7 @@
 // TODO - Maybe use macros to specialize BlockEngine for encryption or decryption?
 // TODO - I think padding could be done better. Maybe macros for BlockEngine would help this too.
 
-use std::prelude::v1::*;
+
 use std::cmp;
 use std::iter::repeat;
 

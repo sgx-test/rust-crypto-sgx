@@ -4,7 +4,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::prelude::v1::*;
+
 use aes::{ctr, KeySize};
 use aead::{AeadEncryptor,AeadDecryptor};
 use cryptoutil::copy_memory;

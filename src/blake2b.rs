@@ -4,7 +4,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::prelude::v1::*;
+
 use std::iter::repeat;
 use cryptoutil::{copy_memory, read_u64v_le, write_u64v_le};
 use digest::Digest;

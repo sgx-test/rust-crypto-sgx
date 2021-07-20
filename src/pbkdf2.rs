@@ -9,7 +9,7 @@
  * http://tools.ietf.org/html/rfc2898.
  */
 
-use std::prelude::v1::*;
+
 use std::iter::repeat;
 use std::io;
 use cryptoutil::copy_memory;

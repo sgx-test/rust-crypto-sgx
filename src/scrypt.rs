@@ -12,7 +12,7 @@
  *       http://www.tarsnap.com/scrypt/scrypt.pdf
  */
 
-use std::prelude::v1::*;
+
 use std;
 use std::iter::repeat;
 use std::io;
